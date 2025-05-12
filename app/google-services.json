@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "237691992437",
+    "project_id": "inventory-3f9c5",
+    "storage_bucket": "inventory-3f9c5.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:237691992437:android:82963769e968bd6eadfb3c",
+        "android_client_info": {
+          "package_name": "com.grace.inventory"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCvphHjFvA4S8eL6Yo_jKbMnef4_aXaXVU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
