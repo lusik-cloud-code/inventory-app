@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.grace.inventory.models.AuthViewModel
+import com.grace.inventory.navigation.ROUTE_SIGN_OUT
 
 
 @SuppressLint("SuspiciousIndentation")
@@ -122,6 +123,16 @@ fun LoginScreen(navController:NavHostController){
 
         Button(
             onClick = { navController.navigate(ROUTE_REGISTER) },
+            colors = ButtonDefaults.buttonColors(Color.DarkGray),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 20.dp, end = 20.dp),
+            shape = RoundedCornerShape(5.dp)) {
+            Text(text = "Register", fontFamily = FontFamily.SansSerif)
+        }
+
+        Button(
+            onClick = { navController.navigate(ROUTE_SIGN_OUT) },
             colors = ButtonDefaults.buttonColors(Color.DarkGray),
             modifier = Modifier
                 .fillMaxWidth()

@@ -58,7 +58,7 @@ class AuthViewModel(
                 }
             }
     }
-    fun logout() {
+    fun signOut() {
         auth.signOut()
         showToast("Logged out successfully")
         navController.navigate(ROUTE_LOGIN) {

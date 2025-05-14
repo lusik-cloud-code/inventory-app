@@ -18,10 +18,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.grace.inventory.models.ProductViewModel
 
 @Composable
-fun CurrentStockScreen(viewModel: ProductViewModel) {
+fun CurrentStockScreen(viewModel: ProductViewModel,navController: NavController) {
     val productList = viewModel.productList
 
     Column(modifier = Modifier

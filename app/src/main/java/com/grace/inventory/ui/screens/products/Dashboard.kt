@@ -2,6 +2,8 @@ package com.grace.inventory.ui.screens
 
 
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -25,9 +27,15 @@ import androidx.navigation.compose.rememberNavController
 import com.grace.inventory.ui.theme.LightPrimary
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
+import com.grace.inventory.R
+import com.grace.inventory.navigation.ROUTE_ABOUT
 import com.grace.inventory.navigation.ROUTE_ADD_ITEM
+import com.grace.inventory.navigation.ROUTE_CURRENT_STOCK
 import com.grace.inventory.navigation.ROUTE_PRODUCT_LIST
+import com.grace.inventory.navigation.ROUTE_SALES_ENTRY
 
 @Composable
 fun DashboardScreen(navController: NavController) {
@@ -35,64 +43,69 @@ fun DashboardScreen(navController: NavController) {
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
+
     ) {
-        Text(
-            text = "DASHBOARD",
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold,
-            color = LightPrimary,
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        )
 
-        Spacer(modifier = Modifier.height(24.dp))
 
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Row(
+            Text(
+                text = "DASHBOARD",
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold,
+                color = LightPrimary,
+                modifier = Modifier.padding(bottom = 16.dp)
+                    .align(Alignment.CenterHorizontally)
+
+
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Column(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                DashboardButton("PRODUCTS LIST", Icons.Filled.List) {
-                    navController.navigate(ROUTE_PRODUCT_LIST)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    DashboardButton("PRODUCTS LIST", Icons.Filled.List) {
+                        navController.navigate(ROUTE_PRODUCT_LIST)
+                    }
+                    DashboardButton("ABOUT COMPANY", Icons.Filled.MoreVert) {
+                        navController.navigate(ROUTE_ABOUT)
+                    }
                 }
-                DashboardButton("EXPENSES", Icons.Filled.MoreVert) {
-                    navController.navigate("expenses")
-                }
-            }
 
-            Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                DashboardButton("ADD ITEM", Icons.Filled.Add) {
-                    navController.navigate(ROUTE_ADD_ITEM)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    DashboardButton("ADD ITEM", Icons.Filled.Add) {
+                        navController.navigate(ROUTE_ADD_ITEM)
+                    }
+                    DashboardButton("CURRENT STOCK", Icons.Filled.Home) {
+                        navController.navigate(ROUTE_CURRENT_STOCK)
+                    }
                 }
-                DashboardButton("CURRENT STOCK", Icons.Filled.Home) {
-                    navController.navigate("currentStock")
-                }
-            }
 
-            Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                DashboardButton("SALES ENTRY", Icons.Filled.ShoppingCart) {
-                    navController.navigate("salesEntry")
-                }
-                DashboardButton("PROFIT & LOSS", Icons.Filled.ThumbUp) {
-                    navController.navigate("statistics")
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    DashboardButton("SALES ENTRY", Icons.Filled.ShoppingCart) {
+                        navController.navigate(ROUTE_SALES_ENTRY)
+                    }
+                    DashboardButton("PROFIT & LOSS", Icons.Filled.ThumbUp) {
+                        navController.navigate("statistics")
+                    }
                 }
             }
         }
     }
-}
-
 
 
 

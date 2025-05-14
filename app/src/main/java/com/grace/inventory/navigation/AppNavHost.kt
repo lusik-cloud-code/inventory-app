@@ -2,7 +2,7 @@ package com.grace.inventory.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 
 import androidx.navigation.NavHostController
@@ -12,6 +12,7 @@ import com.grace.inventory.models.ProductViewModel
 import com.grace.inventory.ui.screens.DashboardScreen
 import com.grace.inventory.ui.screens.auth.LoginScreen
 import com.grace.inventory.ui.screens.auth.RegisterScreen
+import com.grace.inventory.ui.screens.auth.SignOutScreen
 import com.grace.inventory.ui.screens.auth.SplashScreen
 import com.grace.inventory.ui.screens.products.AboutCompanyScreen
 import com.grace.inventory.ui.screens.products.AddItemScreen
@@ -23,7 +24,7 @@ import com.grace.inventory.ui.screens.products.SalesEntryScreen
 @Composable
 fun AppNavHost(
     navController: NavHostController,
-    viewModel: ProductViewModel,
+
     modifier: Modifier = Modifier
 ){
     NavHost(navController=navController,
@@ -43,19 +44,22 @@ fun AppNavHost(
             LoginScreen(navController)
         }
         composable(ROUTE_PRODUCT_LIST) {
-            ProductListScreen(viewModel,navController)
+            ProductListScreen(viewModel(),navController)
         }
         composable(ROUTE_ADD_ITEM) {
-            AddItemScreen(viewModel, navController)
+            AddItemScreen(viewModel(), navController)
         }
         composable(ROUTE_CURRENT_STOCK) {
-            CurrentStockScreen(viewModel)
-        }
-        composable(ROUTE_ABOUT_COMPANY) {
-            AboutCompanyScreen()
+            CurrentStockScreen(viewModel(),navController)
         }
         composable(ROUTE_SALES_ENTRY) {
-            SalesEntryScreen(viewModel, navController)
+            SalesEntryScreen(viewModel(), navController)
+        }
+        composable(ROUTE_SIGN_OUT) {
+            SignOutScreen(viewModel(), navController)
+        }
+        composable(ROUTE_ABOUT) {
+            AboutCompanyScreen(navController)
         }
 
 
