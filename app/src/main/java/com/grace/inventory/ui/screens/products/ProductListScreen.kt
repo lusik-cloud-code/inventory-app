@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.grace.inventory.models.ProductViewModel
+import com.grace.inventory.navigation.ROUTE_ADD_ITEM
 
 @Composable
 fun ProductListScreen(viewModel: ProductViewModel, navController: NavHostController) {
@@ -73,7 +74,7 @@ fun ProductListScreen(viewModel: ProductViewModel, navController: NavHostControl
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(onClick = {
-            navController.navigate("addProduct")
+            navController.navigate(ROUTE_ADD_ITEM)
         }, modifier = Modifier.align(Alignment.CenterHorizontally)) {
             Text("Add New Product")
         }

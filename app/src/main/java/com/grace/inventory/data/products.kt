@@ -13,7 +13,7 @@ data class Product(
     val sellingPrice: Double = 0.0,
     val quantitySold: Int = 0,
     val timestamp: Long = System.currentTimeMillis(),
-    val totalAmount: Double = 0.0,
+    val totalAmount: Int = 0,
 
     val transactionId: Int=0,
     val date: Long=0L,
@@ -41,13 +41,13 @@ data class Product(
 data class Expense(
     val expenseId: Int=0,
     val productName: String="",
-    val totalPrice: Double=0.0,
+    val totalPrice: Int=0,
     val date: Long=0L,
 )
 
 data class SaleTransaction(
     val transactionId: String = "",
-    val totalAmount: Double = 0.0,
+    val totalAmount: Int = 0,
     val date: Long = 0L,
 //    val productName: String,
 //    val quantity: Int,

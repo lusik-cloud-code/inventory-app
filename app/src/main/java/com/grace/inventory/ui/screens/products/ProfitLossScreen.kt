@@ -1,49 +1,41 @@
 package com.grace.inventory.ui.screens.products
 
+import android.app.DatePickerDialog
+import android.view.View
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DatePickerDialog
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavController
 import com.grace.inventory.data.Expense
-import com.grace.inventory.data.Product
 import com.grace.inventory.data.SaleTransaction
+import com.grace.inventory.models.ProductViewModel
 import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Date
-import java.util.Locale
-import kotlin.collections.filter
+import java.util.*
 
 @Composable
 fun ProfitAndLossScreen(
     transactions: List<SaleTransaction>,
     expenses: List<Expense>,
+    viewModel: ProductViewModel,
     navController: NavController
 ) {
     val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
     var selectedDate by remember { mutableStateOf("") }
-
+    var showDatePicker by remember { mutableStateOf(false) }
     val context = LocalContext.current
+    val calendar = remember { Calendar.getInstance() }
 
+    // Filter by selected date
     val filteredSales = if (selectedDate.isNotEmpty()) {
         transactions.filter {
             dateFormat.format(Date(it.date)) == selectedDate
@@ -61,34 +53,47 @@ fun ProfitAndLossScreen(
     val profit = totalSales - totalExpenses
 
     Column(
-        Modifier
+        modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFFEDF4FF))
             .padding(16.dp)
     ) {
         Text("📊 Profit & Loss", fontSize = 24.sp, fontWeight = FontWeight.Bold)
-
         Spacer(Modifier.height(12.dp))
 
-        Button(onClick = {
-            val calendar = Calendar.getInstance()
-            DatePickerDialog(
-                context,
-                { _, y, m, d ->
-                    val pickedDate = Calendar.getInstance().apply { set(y, m, d) }
-                    selectedDate = dateFormat.format(pickedDate.time)
-                },
-                calendar.get(Calendar.YEAR),
-                calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH)
-            ).show()
-        }) {
+        Button(onClick = { showDatePicker = true }) {
             Text(text = if (selectedDate.isNotEmpty()) "Filter: $selectedDate" else "Pick Date")
         }
 
         Spacer(Modifier.height(16.dp))
 
-        Card(colors = CardDefaults.cardColors(containerColor = Color(0xFFDFFFE2))) {
+        // Show Android DatePickerDialog
+        if (showDatePicker) {
+            AndroidView(factory = {
+                DatePickerDialog(
+                    context,
+                    { _, year, month, dayOfMonth ->
+                        val pickedDate = Calendar.getInstance().apply {
+                            set(year, month, dayOfMonth)
+                        }
+                        selectedDate = dateFormat.format(pickedDate.time)
+                        showDatePicker = false
+                    },
+                    calendar.get(Calendar.YEAR),
+                    calendar.get(Calendar.MONTH),
+                    calendar.get(Calendar.DAY_OF_MONTH)
+                ).apply {
+                    setOnCancelListener { showDatePicker = false }
+                    show()
+                }
+                View(context) // Dummy view
+            })
+        }
+
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(containerColor = Color(0xFFDFFFE2))
+        ) {
             Column(Modifier.padding(12.dp)) {
                 Text("Total Sales: Ksh $totalSales", fontWeight = FontWeight.SemiBold)
                 Text("Total Expenses: Ksh $totalExpenses")
@@ -97,6 +102,7 @@ fun ProfitAndLossScreen(
         }
 
         Spacer(Modifier.height(20.dp))
+
         Text("Sales Summary", fontWeight = FontWeight.Bold)
         LazyColumn {
             items(filteredSales) {
@@ -105,6 +111,7 @@ fun ProfitAndLossScreen(
         }
 
         Spacer(Modifier.height(20.dp))
+
         Text("Expenses Summary", fontWeight = FontWeight.Bold)
         LazyColumn {
             items(filteredExpenses) {

@@ -131,21 +131,8 @@ fun LoginScreen(navController:NavHostController){
             Text(text = "Register", fontFamily = FontFamily.SansSerif)
         }
 
-        Button(
-            onClick = { navController.navigate(ROUTE_SIGN_OUT) },
-            colors = ButtonDefaults.buttonColors(Color.DarkGray),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 20.dp, end = 20.dp),
-            shape = RoundedCornerShape(5.dp)) {
-            Text(text = "Register", fontFamily = FontFamily.SansSerif)
-        }
 
     }
-
-
-
-
 
 }
 
