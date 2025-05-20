@@ -22,6 +22,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.grace.inventory.data.Product
+import com.grace.inventory.data.SaleItem
 import com.grace.inventory.models.ProductViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -40,7 +41,7 @@ fun SalesEntryScreen(viewModel: ProductViewModel, navController: NavHostControll
     var searchQuery by remember { mutableStateOf("") }
     val allProducts = viewModel.productList
     val filteredProducts = allProducts.filter {
-        it.name.contains(searchQuery, ignoreCase = true)
+        it.productName.contains(searchQuery, ignoreCase = true)
     }
 
     Scaffold(
@@ -152,7 +153,7 @@ fun SalesEntryScreen(viewModel: ProductViewModel, navController: NavHostControll
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SalesProductCard(product: Product, viewModel: ProductViewModel) {
-    var sellingPrice by remember { mutableStateOf(product.price.toString()) }
+    var sellingPrice by remember { mutableStateOf(product.sellingPrice.toString()) }
     var quantitySold by remember { mutableStateOf("") }
     var isError by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
@@ -175,7 +176,7 @@ fun SalesProductCard(product: Product, viewModel: ProductViewModel) {
             ) {
                 Column {
                     Text(
-                        text = product.name,
+                        text = product.productName,
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurface
@@ -210,7 +211,7 @@ fun SalesProductCard(product: Product, viewModel: ProductViewModel) {
             Divider(color = MaterialTheme.colorScheme.outlineVariant, thickness = 1.dp)
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Price and Quantity Inputs
+
             OutlinedTextField(
                 value = sellingPrice,
                 onValueChange = {
@@ -283,8 +284,8 @@ fun SalesProductCard(product: Product, viewModel: ProductViewModel) {
                             errorMessage = "Insufficient stock available"
                         }
                         else -> {
-                            viewModel.recordSale(product, price, quantity)
-                            sellingPrice = product.price.toString()
+                            viewModel.recordSale(product, price, quantitySold = 0)
+                            sellingPrice = product.sellingPrice.toString()
                             quantitySold = ""
                         }
                     }
@@ -310,7 +311,7 @@ fun SalesProductCard(product: Product, viewModel: ProductViewModel) {
  * Displays the receipt with all items and totals
  */
 @Composable
-fun ReceiptPreviewCard(saleItems: List<Product>) {
+fun ReceiptPreviewCard(saleItems: List<SaleItem>) {
     if (saleItems.isEmpty()) return
 
     val totalAmount = saleItems.sumOf { it.quantity * it.sellingPrice }
@@ -410,7 +411,7 @@ fun ReceiptPreviewCard(saleItems: List<Product>) {
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
-                            item.productName,
+                            "${item.productName}",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onPrimaryContainer,
                             modifier = Modifier.weight(2f)

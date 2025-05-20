@@ -5,21 +5,35 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.grace.inventory.data.Expense
 import com.grace.inventory.data.Product
+import com.grace.inventory.data.SaleItem
 import com.grace.inventory.data.SaleTransaction
 
-
 class ProductViewModel : ViewModel() {
-    var receiptItems = mutableStateListOf<Product>()
+    // List for displaying receipt items (products that have been sold)
+    var receiptItems = mutableStateListOf<SaleItem>()
         private set
 
+
+    // Firebase Database reference for products
     private val dbRef = FirebaseDatabase.getInstance().getReference("products")
+
+    // List of products fetched from Firebase
     var productList by mutableStateOf(listOf<Product>())
+        private set
+
+    // List of sales transactions fetched from Firebase
+    var saleTransactions: List<SaleTransaction> by mutableStateOf(listOf())
+        private set
+
+    // List of expenses fetched from Firebase
+    var expenseList: List<Expense> by mutableStateOf(listOf())
         private set
 
     init {
@@ -28,6 +42,7 @@ class ProductViewModel : ViewModel() {
         fetchExpenses()
     }
 
+    // Fetch the list of products from Firebase
     fun fetchProducts() {
         dbRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -39,221 +54,146 @@ class ProductViewModel : ViewModel() {
                 productList = products
             }
 
-            override fun onCancelled(error: DatabaseError) {}
+            override fun onCancelled(error: DatabaseError) {
+                // Handle error if needed
+            }
         })
     }
 
+    // Add a new product to Firebase
     fun addProduct(product: Product) {
         val id = dbRef.push().key ?: return
-        product.id = id
+        product.productId = id
         dbRef.child(id).setValue(product)
     }
 
+    // Remove a product from Firebase
     fun deleteProduct(productId: String) {
         dbRef.child(productId).removeValue()
     }
+
+    // Update an existing product in Firebase
     fun updateProduct(productId: String, updatedProduct: Product) {
         dbRef.child(productId).setValue(updatedProduct)
     }
 
+    // Record a sale, update the product quantity, and update receipt items.
+    fun recordSale(product: Product, sellingPrice: Double, quantitySold: Long) {
+        val saleId = FirebaseDatabase.getInstance().getReference("sales").push().key ?: return
 
-    //    need to delete this
-    fun recordSale(product: Product, sellingPrice: Double, quantitySold: Int) {
-        val saleId = dbRef.push().key ?: return
 
-        val sale = Product(
-            saleId = saleId,
-            productId = product.id,
-            productName = product.name,
-            tag = product.tag,
+        val totalAmount = (sellingPrice * quantitySold).toInt()
+
+
+        val sale = SaleTransaction(
+            transactionId = saleId,
+            productId = product.productId,  // ✅ Use productId
+            productName = product.productName,  // ✅ Use productName
             sellingPrice = sellingPrice,
-            quantitySold = quantitySold,
-            quantity = product.quantity,
+            quantitySold = quantitySold.toInt(),
+            totalAmount = totalAmount.toInt(),
+
+            timestamp = System.currentTimeMillis()
         )
 
-        // Clear previous receipt and add new one
-        receiptItems.clear()
-        receiptItems.add(sale)
-
-        // Save to /sales
-        dbRef.child("sales").child(saleId).setValue(sale)
+        FirebaseDatabase.getInstance().getReference("sales")
+            .child(saleId)
+            .setValue(sale)
             .addOnSuccessListener {
                 val newQuantity = product.quantity - quantitySold
-                dbRef.child("products").child(product.id).child("quantity").setValue(newQuantity)
+                FirebaseDatabase.getInstance().getReference("products")
+                    .child(product.productId)  // ✅ Use productId
+                    .child("quantity")
+                    .setValue(newQuantity)
             }
+
+        // Fix is here
+        receiptItems.clear()
+        receiptItems.add(
+            SaleItem(
+                productId = product.productId,  // ✅ Use productId
+                productName = product.productName,  // ✅ Use productName
+                quantitySold = quantitySold.toInt(),
+                sellingPrice = sellingPrice,
+                totalAmount = totalAmount
+            )
+        )
     }
 
 
+
+    // Fetch sales transactions from Firebase
     private fun fetchSales() {
-        dbRef.child("sales").addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val sales = mutableListOf<SaleTransaction>()
-                snapshot.children.forEach {
-                    val txn = it.getValue(SaleTransaction::class.java)
-                    txn?.let { sales.add(it) }
+        FirebaseDatabase.getInstance().getReference("sales")
+            .addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val sales = mutableListOf<SaleTransaction>()
+                    snapshot.children.forEach {
+                        val txn = it.getValue(SaleTransaction::class.java)
+                        txn?.let { sales.add(it) }
+                    }
+                    saleTransactions = sales
                 }
-                saleTransactions = sales
-            }
 
-            override fun onCancelled(error: DatabaseError) {}
-        })
-
-
+                override fun onCancelled(error: DatabaseError) {
+                    // Handle error if needed
+                }
+            })
     }
 
-    var saleTransactions: List<SaleTransaction> by mutableStateOf(listOf())
-        private set
-
-    var expenseList: List<Expense> by mutableStateOf(listOf())
-        private set
-
-    // Example: Call this to load dummy or real data into the lists
-    fun loadSampleData() {
-        // TODO: Replace with actual Firebase fetch logic
-        saleTransactions = listOf(
-            SaleTransaction("TX001", 5000, System.currentTimeMillis())
-        )
-
-        val EX001 = 0
-        expenseList = listOf(
-            Expense(EX001, "Sugar", 2000, System.currentTimeMillis())
-        )
-    }
+    // Fetch expenses from Firebase
     private fun fetchExpenses() {
         FirebaseDatabase.getInstance().getReference("expenses")
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    val list = mutableListOf<Expense>()
+                    val expenses = mutableListOf<Expense>()
                     snapshot.children.forEach {
-                        val item = it.getValue(Expense::class.java)
-                        item?.let { list.add(it) }
+                        val expense = it.getValue(Expense::class.java)
+                        expense?.let { expenses.add(it) }
                     }
-                    expenseList = list
+                    expenseList = expenses
                 }
 
-                override fun onCancelled(error: DatabaseError) {}
+                override fun onCancelled(error: DatabaseError) {
+                    // Handle error if needed
+                }
             })
     }
 
+    // Filter sales transactions by a given date range.
+    fun filterSalesByDate(start: Long, end: Long): List<SaleTransaction> {
+        return saleTransactions.filter { it.timestamp in start..end }
+    }
+
+    // Filter expenses by a given date range.
+    fun filterExpensesByDate(start: Long, end: Long): List<Expense> {
+        return expenseList.filter { it.timestamp in start..end }
+    }
+
+    // Calculate profit by summing total sales and subtracting total expenses in a date range.
+    fun calculateProfit(start: Long, end: Long): Int {
+        val totalSales = filterSalesByDate(start, end).sumOf { it.totalAmount }
+        val totalExpenses = filterExpensesByDate(start, end).sumOf { it.totalPrice }
+        return totalSales - totalExpenses
+    }
+
+    // Load sample data (for testing or debugging purposes)
+    fun loadSampleData() {
+        saleTransactions = listOf(
+            SaleTransaction(
+                transactionId = "TX001",
+                productId = "P001",
+                productName = "Sample",
+                sellingPrice = 1000.0,
+                quantitySold = 5,
+                totalAmount = 5000,
+                timestamp = System.currentTimeMillis()
+            )
+        )
+
+        // Example expense with id "0" (adjust parameters as needed)
+        expenseList = listOf(
+            Expense(0, "Sugar", 2000, System.currentTimeMillis())
+        )
+    }
 }
-
-
-
-
-    // reduce quantity
-
-
-
-
-        // total amount logic (optional)
-//COMMENTED TO THIS POINT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-//
-////    private val _receiptItems = mutableStateListOf<SaleItem>()
-//    val receiptItems: List<SaleItem> = _receiptItems
-//
-//    fun recordSale(product: Product, sellingPrice: Double, quantity: Int) {
-//        // reduce quantity
-//        product.quantity -= quantity
-//
-//        val saleItem = SaleItem(
-//            productName = product.name,
-//            quantity = quantity,
-//            sellingPrice = sellingPrice
-//        )
-//
-//        _receiptItems.add(saleItem)
-
-        // total amount logic (optional)
-//
-//
-//import androidx.compose.runtime.*
-//import androidx.lifecycle.ViewModel
-//import com.google.firebase.database.*
-//import com.grace.inventory.data.Product
-//import com.grace.inventory.data.SaleTransaction
-//
-//class InventoryViewModel : ViewModel() {
-//    private val dbRef = FirebaseDatabase.getInstance().reference
-//
-//    var productList by mutableStateOf(listOf<Product>())
-//        private set
-//
-//    var receiptItems = mutableStateListOf<Product>()
-//        private set
-//
-//    var saleTransactions by mutableStateOf(listOf<SaleTransaction>())
-//        private set
-//
-//    init {
-//        fetchProducts()
-//        fetchSales()
-//    }
-//
-//    // 🔄 Fetch Products
-//    private fun fetchProducts() {
-//        dbRef.child("products").addValueEventListener(object : ValueEventListener {
-//            override fun onDataChange(snapshot: DataSnapshot) {
-//                val products = mutableListOf<Product>()
-//                snapshot.children.forEach {
-//                    val product = it.getValue(Product::class.java)
-//                    product?.let { products.add(it) }
-//                }
-//                productList = products
-//            }
-//
-//            override fun onCancelled(error: DatabaseError) {}
-//        })
-//    }
-//
-//    // ➕ Add Product
-//    fun addProduct(product: Product) {
-//        val id = dbRef.child("products").push().key ?: return
-//        product.id = id
-//        dbRef.child("products").child(id).setValue(product)
-//    }
-//
-//    // ❌ Delete Product
-//    fun deleteProduct(productId: String) {
-//        dbRef.child("products").child(productId).removeValue()
-//    }
-//
-//    // ✏️ Update Product
-//    fun updateProduct(productId: String, updatedProduct: Product) {
-//        dbRef.child("products").child(productId).setValue(updatedProduct)
-//    }
-//
-//    // 🧾 Record a Sale + Update Product Quantity
-//    fun recordSale(product: Product, sellingPrice: Double, quantitySold: Int) {
-//        val saleId = dbRef.child("sales").push().key ?: return
-//        val timestamp = System.currentTimeMillis()
-//        val totalPrice = sellingPrice * quantitySold
-//
-//        // Add to receipt display
-//        val soldItem = product.copy(
-//            sellingPrice = sellingPrice,
-//            quantitySold = quantitySold
-//        )
-//        receiptItems.add(soldItem)
-//
-//        // Create transaction
-//        val transaction = SaleTransaction(
-//            transactionId = saleId,
-//            date = timestamp,
-//            totalAmount = totalPrice,
-//            productName = product.name,
-//            quantity = quantitySold
-//        )
-//
-//        // Save to Firebase
-//        dbRef.child("sales").child(saleId).setValue(transaction).addOnSuccessListener {
-//            // Update product quantity
-//            val newQty = product.quantity - quantitySold
-//            dbRef.child("products").child(product.id).child("quantity").setValue(newQty)
-//        }
-//    }
-
-    // 🔁 Fetch Sales Transactions
-
-
-
-

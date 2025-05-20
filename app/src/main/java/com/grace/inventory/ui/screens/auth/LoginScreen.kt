@@ -30,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -73,6 +74,7 @@ fun LoginScreen(navController:NavHostController){
             value = email,
             onValueChange = {email = it},
             label = { Text(text = "Email Address", fontFamily = FontFamily.SansSerif)},
+            textStyle = TextStyle(color = Color.Black),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
             leadingIcon = { Icon(imageVector = Icons.Default.Email, contentDescription = "")},
             modifier = Modifier
@@ -88,6 +90,8 @@ fun LoginScreen(navController:NavHostController){
             value = password,
             onValueChange = {password = it},
             label = { Text(text = "Password", fontFamily = FontFamily.SansSerif)},
+            textStyle = TextStyle(color = Color.Black),
+
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             leadingIcon = { Icon(imageVector = Icons.Default.Lock, contentDescription = "") },
             modifier = Modifier

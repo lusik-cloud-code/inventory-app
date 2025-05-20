@@ -7,7 +7,7 @@ import com.grace.inventory.models.ProductViewModel
 
 @Composable
 fun EditProductScreen(productId: String, viewModel: ProductViewModel,navController: NavHostController) {
-    val product = viewModel.productList.find { it.id == productId }
+    val product = viewModel.productList.find { it.productId == productId }
 
     if (product != null) {
         // Show editable fields for this product

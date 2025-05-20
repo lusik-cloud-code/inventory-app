@@ -49,12 +49,12 @@ fun CurrentStockScreen(viewModel: ProductViewModel,navController: NavController)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text(
-                            text = "Name: ${product.name}",
+                            text = "Name: ${product.productName}",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold
                         )
                         Spacer(modifier = Modifier.height(4.dp))
-                        Text(text = "Price: KES ${product.price}")
+                        Text(text = "Price: KES ${product.sellingPrice}")
                         Text(text = "Quantity: ${product.quantity}")
                         Text(text = "Tag: ${product.tag}")
                     }

@@ -1,57 +1,57 @@
 package com.grace.inventory.data
 
-data class Product(
-    var id: String = "",
-    val name: String = "",
-    val quantity: Int = 0,
-    val price: Double = 0.0,
-    var tag: String = "",
+import java.time.temporal.TemporalAmount
+//
+//
+//data class Product(
+//    var productId: String = "",
+//    var productName: String = "",
+//
+//    var totalPrice: Double = 0.0,
+//    var totalAmount: Double = 0.0,
+//    var date: String = "",
+//    var timestamp: Long = 0L,
+//    var expenseId: String = "",
+//    var saleId: String = "",
+//    var transactionId: String = "",
+//    var quantitySold: Int = 0,
+//    var tag: String = "",
+//    val quantity: Int = 0,            // ✅ now it's a number
+//    val sellingPrice: Double = 0.0
+//)
+//
+//data class SaleItem(
+//    val productId: String="",
+//    val productName: String="",
+//    val quantitySold: Int=0,
+//    val totalAmount: Int=0,
+//    val quantity: Int = 0,            // ✅ now it's a number
+//    val sellingPrice: Double = 0.0
+//)
 
-    val saleId: String = "",
+
+
+data class Product(
+    var productId: String = "",
+    var productName: String = "",
+    var totalPrice: Double = 0.0,
+    var totalAmount: Double = 0.0,
+    var date: String = "",
+    var timestamp: Long = 0L,
+    var expenseId: String = "",
+    var saleId: String = "",
+    var transactionId: String = "",
+    var quantitySold: Int = 0,         // 🔁 changed from Int → Long
+    var tag: String = "",
+    val quantity: Long = 0,             // 🔁 changed from Int → Long
+    val sellingPrice: Double = 0.0
+)
+
+data class SaleItem(
     val productId: String = "",
     val productName: String = "",
-    val sellingPrice: Double = 0.0,
-    val quantitySold: Int = 0,
-    val timestamp: Long = System.currentTimeMillis(),
+    val quantitySold: Int = 0,         // 🔁 changed from Int → Long
     val totalAmount: Int = 0,
-
-    val transactionId: Int=0,
-    val date: Long=0L,
-
-//WE BEGIN HERE
-    val expenseId: Int=0,
-
-    val totalPrice: Double=0.0,
-
+    val quantity: Long = 0,             // 🔁 changed from Int → Long
+    val sellingPrice: Double = 0.0
 )
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-data class Expense(
-    val expenseId: Int=0,
-    val productName: String="",
-    val totalPrice: Int=0,
-    val date: Long=0L,
-)
-
-data class SaleTransaction(
-    val transactionId: String = "",
-    val totalAmount: Int = 0,
-    val date: Long = 0L,
-//    val productName: String,
-//    val quantity: Int,
-)
-
-
-

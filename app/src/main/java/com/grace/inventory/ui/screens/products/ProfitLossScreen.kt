@@ -29,6 +29,7 @@ fun ProfitAndLossScreen(
     viewModel: ProductViewModel,
     navController: NavController
 ) {
+
     val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
     var selectedDate by remember { mutableStateOf("") }
     var showDatePicker by remember { mutableStateOf(false) }
@@ -38,7 +39,7 @@ fun ProfitAndLossScreen(
     // Filter by selected date
     val filteredSales = if (selectedDate.isNotEmpty()) {
         transactions.filter {
-            dateFormat.format(Date(it.date)) == selectedDate
+            dateFormat.format(Date(it.timestamp)) == selectedDate
         }
     } else transactions
 
@@ -106,7 +107,7 @@ fun ProfitAndLossScreen(
         Text("Sales Summary", fontWeight = FontWeight.Bold)
         LazyColumn {
             items(filteredSales) {
-                Text("• ${it.transactionId} - Ksh ${it.totalAmount} on ${dateFormat.format(Date(it.date))}")
+                Text("• ${it.transactionId} - Ksh ${it.totalAmount} on ${dateFormat.format(Date(it.timestamp))}")
             }
         }
 

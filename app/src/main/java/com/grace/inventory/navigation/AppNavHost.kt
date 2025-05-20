@@ -66,6 +66,7 @@ fun AppNavHost(
         }
         composable(ROUTE_PROFIT_LOSS) {
             val vm = viewModel<ProductViewModel>()
+            // Directly pass properties; if they are LiveData, consider observing them as needed
             ProfitAndLossScreen(
                 transactions = vm.saleTransactions,
                 expenses = vm.expenseList,
@@ -73,6 +74,7 @@ fun AppNavHost(
                 navController = navController
             )
         }
+
         composable(ROUTE_EXPENSES) {
             val vm = viewModel<ProductViewModel>()
             ExpensesScreen(expenses = vm.expenseList, navController = navController)
