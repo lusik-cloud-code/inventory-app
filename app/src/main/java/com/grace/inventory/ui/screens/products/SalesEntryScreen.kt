@@ -287,6 +287,7 @@ fun SalesProductCard(product: Product, viewModel: ProductViewModel) {
                             viewModel.recordSale(product, price, quantitySold = 0)
                             sellingPrice = product.sellingPrice.toString()
                             quantitySold = ""
+
                         }
                     }
                 },

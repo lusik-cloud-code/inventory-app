@@ -104,6 +104,7 @@ import com.grace.inventory.navigation.ROUTE_EDIT
 @Composable
 fun ProductListScreen(viewModel: ProductViewModel, navController: NavHostController) {
     val productList = viewModel.productList
+    val productId = "someProductId" // This is the ID you want to pass
     var searchQuery by remember { mutableStateOf("") }
 
     Box(
@@ -170,7 +171,7 @@ fun ProductListScreen(viewModel: ProductViewModel, navController: NavHostControl
                             Row {
                                 IconButton(
                                     onClick = {
-                                        navController.navigate("$ROUTE_EDIT/${product.productId}")
+                                        navController.navigate("editproductscreen/${product.productId}")
                                     },
                                     modifier = Modifier.neonGlow(Color.Cyan)
                                 ) {

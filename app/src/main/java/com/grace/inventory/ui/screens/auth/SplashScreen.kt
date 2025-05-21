@@ -33,9 +33,6 @@ fun SplashScreen(navController: NavController
                 popUpTo(ROUTE_SPLASH) { inclusive = true }
             }
         }
-
-
-
     // UI
     Box(
         modifier = Modifier
@@ -44,10 +41,10 @@ fun SplashScreen(navController: NavController
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = "Inventory",
-            fontSize = 40.sp,
+            text = "Inventory App",
+            fontSize = 100.sp,
             fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary,
+            color = MaterialTheme.colorScheme.secondary,
             modifier = Modifier.alpha(alpha.value)
         )
     }

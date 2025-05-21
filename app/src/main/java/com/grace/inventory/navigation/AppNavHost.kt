@@ -1,5 +1,6 @@
 package com.grace.inventory.navigation
 
+import EditProductScreen
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -17,7 +18,6 @@ import com.grace.inventory.ui.screens.auth.SplashScreen
 import com.grace.inventory.ui.screens.products.AboutCompanyScreen
 import com.grace.inventory.ui.screens.products.AddItemScreen
 import com.grace.inventory.ui.screens.products.CurrentStockScreen
-import com.grace.inventory.ui.screens.products.EditProductScreen
 import com.grace.inventory.ui.screens.products.ExpensesScreen
 import com.grace.inventory.ui.screens.products.ProductListScreen
 import com.grace.inventory.ui.screens.products.ProfitAndLossScreen
@@ -79,9 +79,9 @@ fun AppNavHost(
             val vm = viewModel<ProductViewModel>()
             ExpensesScreen(expenses = vm.expenseList, navController = navController)
         }
-        composable(ROUTE_EDIT) { backStackEntry ->
+        composable("editproductscreen/{productId}") { backStackEntry ->
             val productId = backStackEntry.arguments?.getString("productId")
-            EditProductScreen(productId = productId ?: "", viewModel(), navController = navController)
+            EditProductScreen(productId = productId!!, viewModel = viewModel(), navController = navController)
         }
     }
 }

@@ -1,30 +1,19 @@
 package com.grace.inventory.ui.screens.auth
 
-import com.grace.inventory.models.AuthViewModel
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+
+import com.grace.inventory.models.AuthViewModel
+import com.grace.inventory.navigation.ROUTE_LOGIN
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -39,26 +28,31 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.grace.inventory.navigation.ROUTE_LOGIN
-
 
 @Composable
-fun RegisterScreen(navController:NavHostController){
+fun RegisterScreen(navController: NavHostController) {
+    val deepBlue = Color(0xFF0D1B2A)
+    val vibrantPurple = Color(0xFF7F00FF)
+    val softPurple = Color(0xFF9C27B0)
+    val white = Color.White
+
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .background(deepBlue)
+            .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-
-
-
         Text(
             text = "Create An Account!",
-            fontSize = 40.sp,
+            fontSize = 36.sp,
             fontWeight = FontWeight.Bold,
-            fontFamily = FontFamily.Cursive
+            fontFamily = FontFamily.Cursive,
+            color = vibrantPurple
         )
-        Spacer(modifier = Modifier.height(30.dp))
+
+        Spacer(modifier = Modifier.height(20.dp))
 
         var name by remember { mutableStateOf("") }
         var email by remember { mutableStateOf("") }
@@ -67,107 +61,109 @@ fun RegisterScreen(navController:NavHostController){
 
         OutlinedTextField(
             value = name,
-            onValueChange = { name = it},
-            label = { Text(text = "Full Name", fontFamily = FontFamily.SansSerif)},
-            textStyle = TextStyle(color = Color.Black),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            leadingIcon = { Icon(imageVector = Icons.Default.Person, contentDescription = "") },
+            onValueChange = { name = it },
+            label = { Text("Full Name", color = softPurple) },
+            textStyle = TextStyle(color = white),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+            leadingIcon = { Icon(Icons.Default.Person, contentDescription = null, tint = softPurple) },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 20.dp, end = 20.dp),
-            shape = RoundedCornerShape(5.dp)
-
+                .padding(vertical = 6.dp),
+            shape = RoundedCornerShape(12.dp),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = vibrantPurple,
+                unfocusedBorderColor = softPurple,
+                cursorColor = vibrantPurple
+            )
         )
-
-        Spacer(modifier = Modifier.height(10.dp))
-
 
         OutlinedTextField(
             value = email,
-            onValueChange = {email = it},
-            label = { Text(text = "Email Address", fontFamily = FontFamily.SansSerif)},
-            textStyle = TextStyle(color = Color.Black),
+            onValueChange = { email = it },
+            label = { Text("Email Address", color = softPurple) },
+            textStyle = TextStyle(color = white),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-            leadingIcon = { Icon(imageVector = Icons.Default.Email, contentDescription = "") },
+            leadingIcon = { Icon(Icons.Default.Email, contentDescription = null, tint = softPurple) },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 20.dp, end = 20.dp),
-            shape = RoundedCornerShape(5.dp)
+                .padding(vertical = 6.dp),
+            shape = RoundedCornerShape(12.dp),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = vibrantPurple,
+                unfocusedBorderColor = softPurple,
+                cursorColor = vibrantPurple
+            )
         )
 
-
-        Spacer(modifier = Modifier.height(10.dp))
         OutlinedTextField(
             value = password,
-            onValueChange = {password = it},
-            label = { Text(text = "Password", fontFamily = FontFamily.SansSerif)},
-            textStyle = TextStyle(color = Color.Black),
+            onValueChange = { password = it },
+            label = { Text("Password", color = softPurple) },
+            textStyle = TextStyle(color = white),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            leadingIcon = { Icon(imageVector = Icons.Default.Lock, contentDescription = "") },
             visualTransformation = PasswordVisualTransformation(),
+            leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null, tint = softPurple) },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 20.dp, end = 20.dp),
-            shape = RoundedCornerShape(5.dp)
-
+                .padding(vertical = 6.dp),
+            shape = RoundedCornerShape(12.dp),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = vibrantPurple,
+                unfocusedBorderColor = softPurple,
+                cursorColor = vibrantPurple
+            )
         )
-
-        Spacer(modifier = Modifier.height(10.dp))
 
         OutlinedTextField(
             value = confpassword,
-            onValueChange = {confpassword = it},
-            label = { Text(text = "Confirm Password", fontFamily = FontFamily.SansSerif)},
-            textStyle = TextStyle(color = Color.Black),
-
+            onValueChange = { confpassword = it },
+            label = { Text("Confirm Password", color = softPurple) },
+            textStyle = TextStyle(color = white),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            leadingIcon = { Icon(imageVector = Icons.Default.Lock, contentDescription = "") },
             visualTransformation = PasswordVisualTransformation(),
+            leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null, tint = softPurple) },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 20.dp, end = 20.dp),
-            shape = RoundedCornerShape(5.dp)
-
+                .padding(vertical = 6.dp),
+            shape = RoundedCornerShape(12.dp),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = vibrantPurple,
+                unfocusedBorderColor = softPurple,
+                cursorColor = vibrantPurple
+            )
         )
 
-        Spacer(modifier = Modifier.height(10.dp))
-
-
-
+        Spacer(modifier = Modifier.height(20.dp))
 
         val context = LocalContext.current
         val authViewModel = AuthViewModel(navController, context)
-        Button(onClick = {
-            authViewModel.register(name, email, password,confpassword)
 
-        },
-            colors = ButtonDefaults.buttonColors(Color.DarkGray),
+        Button(
+            onClick = { authViewModel.register(name, email, password, confpassword) },
+            colors = ButtonDefaults.buttonColors(containerColor = vibrantPurple),
+            shape = RoundedCornerShape(12.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 20.dp, end = 20.dp),
-            shape = RoundedCornerShape(5.dp)) {
-            Text(text = "Register")
+                .padding(vertical = 8.dp)
+        ) {
+            Text("Register", fontWeight = FontWeight.Bold, color = white)
         }
 
-        Spacer(modifier = Modifier.height(10.dp))
-
-        Button(onClick = {
-            navController.navigate(ROUTE_LOGIN)
-        },
-            colors = ButtonDefaults.buttonColors(Color.DarkGray),
+        Button(
+            onClick = { navController.navigate(ROUTE_LOGIN) },
+            colors = ButtonDefaults.buttonColors(containerColor = softPurple),
+            shape = RoundedCornerShape(12.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 20.dp, end = 20.dp),
-            shape = RoundedCornerShape(5.dp)) {
-            Text(text = "Login")
+                .padding(vertical = 4.dp)
+        ) {
+            Text("Login", fontWeight = FontWeight.Bold, color = white)
         }
-
     }
 }
 
-@Composable
 @Preview(showBackground = true)
-fun RegisterScreenPreview(){
+@Composable
+fun RegisterScreenPreview() {
     RegisterScreen(navController = rememberNavController())
-
 }
