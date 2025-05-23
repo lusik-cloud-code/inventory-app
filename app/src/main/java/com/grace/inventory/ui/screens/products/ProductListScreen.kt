@@ -99,7 +99,9 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.grace.inventory.models.ProductViewModel
 import com.grace.inventory.navigation.ROUTE_ADD_ITEM
+import com.grace.inventory.navigation.ROUTE_DASHBOARD
 import com.grace.inventory.navigation.ROUTE_EDIT
+import com.grace.inventory.ui.screens.Dashboard.ROUTE_PRODUCT_LIST
 
 @Composable
 fun ProductListScreen(viewModel: ProductViewModel, navController: NavHostController) {
@@ -197,6 +199,12 @@ fun ProductListScreen(viewModel: ProductViewModel, navController: NavHostControl
             NeonButton(
                 text = "Add New Product",
                 onClick = { navController.navigate(ROUTE_ADD_ITEM) },
+                backgroundColor = Color.Magenta
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            NeonButton(
+                text = "BACK TO DASHBOARD",
+                onClick = { navController.navigate(ROUTE_DASHBOARD) },
                 backgroundColor = Color.Magenta
             )
         }

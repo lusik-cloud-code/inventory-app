@@ -100,6 +100,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.grace.inventory.data.Product
 import com.grace.inventory.models.ProductViewModel
+import com.grace.inventory.navigation.ROUTE_DASHBOARD
 import com.grace.inventory.ui.screens.Dashboard.ROUTE_ADD_ITEM
 
 import com.grace.inventory.ui.screens.Dashboard.ROUTE_PRODUCT_LIST
@@ -169,6 +170,12 @@ fun AddItemScreen(viewModel: ProductViewModel, navController: NavHostController)
                     viewModel.addProduct(product)
                     navController.navigate(ROUTE_PRODUCT_LIST)
                 },
+                backgroundColor = Color.Magenta
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            NeonButton(
+                text = "BACK TO DASHBOARD",
+                onClick = { navController.navigate(ROUTE_DASHBOARD) },
                 backgroundColor = Color.Magenta
             )
         }

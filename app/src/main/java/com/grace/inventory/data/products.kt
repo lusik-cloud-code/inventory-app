@@ -67,7 +67,7 @@ data class Product(
     var transactionId: String = "",
     var quantitySold: Long = 0L,         // Changed from Int to Long
     var tag: String = "",
-    val quantity: Long = 0L,             // Already Long
+    var quantity: Long = 0L,             // Already Long
     val sellingPrice: Double = 0.0
 )
 

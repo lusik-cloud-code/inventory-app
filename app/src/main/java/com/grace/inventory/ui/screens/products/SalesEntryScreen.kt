@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.grace.inventory.data.Product
@@ -115,10 +116,8 @@ fun SalesEntryScreen(viewModel: ProductViewModel, navController: NavHostControll
                 items(filteredProducts) { product ->
                     SalesProductCard(product = product, viewModel = viewModel)
                     Spacer(modifier = Modifier.height(8.dp))
-                }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
+                    ReceiptPreviewCard(saleItems = viewModel.receiptItems)
 
             // Receipt Section
             if (viewModel.receiptItems.isNotEmpty()) {
@@ -140,8 +139,9 @@ fun SalesEntryScreen(viewModel: ProductViewModel, navController: NavHostControll
                     )
                 }
 
-                Spacer(modifier = Modifier.height(8.dp))
-                ReceiptPreviewCard(saleItems = viewModel.receiptItems)
+
+            }
+                }
             }
         }
     }
@@ -155,17 +155,17 @@ fun SalesEntryScreen(viewModel: ProductViewModel, navController: NavHostControll
 fun SalesProductCard(product: Product, viewModel: ProductViewModel) {
     var sellingPrice by remember { mutableStateOf(product.sellingPrice.toString()) }
     var quantitySold by remember { mutableStateOf("") }
-    var isError by remember { mutableStateOf(false) }
-    var errorMessage by remember { mutableStateOf("") }
+
+    // Separate error states for each field for better UX
+    var priceError by remember { mutableStateOf<String?>(null) }
+    var quantityError by remember { mutableStateOf<String?>(null) }
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        ),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         shape = RoundedCornerShape(16.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -181,17 +181,13 @@ fun SalesProductCard(product: Product, viewModel: ProductViewModel) {
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurface
                     )
-
                     Spacer(modifier = Modifier.height(4.dp))
-
                     Text(
                         text = "Tag: ${product.tag}",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
-
-                // Quantity Badge
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(12.dp))
@@ -211,17 +207,17 @@ fun SalesProductCard(product: Product, viewModel: ProductViewModel) {
             Divider(color = MaterialTheme.colorScheme.outlineVariant, thickness = 1.dp)
             Spacer(modifier = Modifier.height(16.dp))
 
-
+            // Selling Price Input
             OutlinedTextField(
                 value = sellingPrice,
                 onValueChange = {
                     sellingPrice = it
-                    isError = false
+                    priceError = null
                 },
                 label = { Text("Selling Price") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 modifier = Modifier.fillMaxWidth(),
-                isError = isError,
+                isError = priceError != null,
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = MaterialTheme.colorScheme.primary,
                     unfocusedBorderColor = MaterialTheme.colorScheme.outline
@@ -234,28 +230,36 @@ fun SalesProductCard(product: Product, viewModel: ProductViewModel) {
                     )
                 }
             )
+            if (priceError != null) {
+                Text(
+                    text = priceError ?: "",
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(start = 8.dp, top = 4.dp)
+                )
+            }
 
             Spacer(modifier = Modifier.height(12.dp))
 
+            // Quantity to Sell Input
             OutlinedTextField(
                 value = quantitySold,
                 onValueChange = {
                     quantitySold = it
-                    isError = false
+                    quantityError = null
                 },
                 label = { Text("Quantity to Sell") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 modifier = Modifier.fillMaxWidth(),
-                isError = isError,
+                isError = quantityError != null,
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = MaterialTheme.colorScheme.primary,
                     unfocusedBorderColor = MaterialTheme.colorScheme.outline
-                ),
+                )
             )
-
-            if (isError) {
+            if (quantityError != null) {
                 Text(
-                    text = errorMessage,
+                    text = quantityError ?: "",
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.padding(start = 8.dp, top = 4.dp)
@@ -264,37 +268,30 @@ fun SalesProductCard(product: Product, viewModel: ProductViewModel) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Sell Button
+            // Sell Button - disabled when invalid inputs
+            val price = sellingPrice.toDoubleOrNull()
+            val quantity = quantitySold.toIntOrNull()
+            val isButtonEnabled = price != null && price > 0 && quantity != null && quantity > 0 && quantity <= product.quantity
+
             Button(
                 onClick = {
-                    val price = sellingPrice.toDoubleOrNull()
-                    val quantity = quantitySold.toIntOrNull()
-
                     when {
-                        price == null || price <= 0 -> {
-                            isError = true
-                            errorMessage = "Please enter a valid price"
-                        }
-                        quantity == null || quantity <= 0 -> {
-                            isError = true
-                            errorMessage = "Please enter a valid quantity"
-                        }
-                        quantity > product.quantity -> {
-                            isError = true
-                            errorMessage = "Insufficient stock available"
-                        }
+                        price == null || price <= 0 -> priceError = "Please enter a valid price"
+                        quantity == null || quantity <= 0 -> quantityError = "Please enter a valid quantity"
+                        quantity > product.quantity -> quantityError = "Insufficient stock available"
                         else -> {
-                            viewModel.recordSale(product, price, quantitySold = 0)
+                            viewModel.recordSale(product, price, quantity.toLong())
+                            // Reset fields
                             sellingPrice = product.sellingPrice.toString()
                             quantitySold = ""
-
                         }
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),
+                enabled = isButtonEnabled,
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary
+                    containerColor = if (isButtonEnabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
+                    contentColor = if (isButtonEnabled) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
                 ),
                 shape = RoundedCornerShape(8.dp)
             ) {
@@ -307,6 +304,7 @@ fun SalesProductCard(product: Product, viewModel: ProductViewModel) {
         }
     }
 }
+
 
 /**
  * Displays the receipt with all items and totals
